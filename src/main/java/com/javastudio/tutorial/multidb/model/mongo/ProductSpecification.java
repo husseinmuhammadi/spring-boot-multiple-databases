@@ -1,11 +1,9 @@
 package com.javastudio.tutorial.multidb.model.mongo;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
+@Table(name = "product_specification")
 public class ProductSpecification {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
