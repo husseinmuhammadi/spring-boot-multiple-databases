@@ -1,4 +1,4 @@
-package com.javastudio.tutorial.multidb.model;
+package com.javastudio.tutorial.multidb.model.mongo;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

@@ -8,6 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -19,36 +20,40 @@ import javax.sql.DataSource;
 @EnableJpaRepositories(
         basePackages = "com.javastudio.tutorial.multidb.repository.oracle",
         entityManagerFactoryRef = "oracleEntityManagerFactory",
-        transactionManagerRef = ""
+        transactionManagerRef = "oracleTransactionManager"
 )
 public class OracleDataSourceConfiguration {
 
+    @Primary
     @Bean
     @ConfigurationProperties("datasource.oracle")
     public DataSourceProperties oracleDataSourceProperties() {
         return new DataSourceProperties();
     }
 
+    @Primary
     @Bean
     @ConfigurationProperties("datasource.oracle.configuration")
-    public DataSource cardDataSource() {
+    public DataSource oracleDataSource() {
         return oracleDataSourceProperties()
                 .initializeDataSourceBuilder()
                 .type(HikariDataSource.class)
                 .build();
     }
 
+    @Primary
     @Bean(name = "oracleEntityManagerFactory")
     public LocalContainerEntityManagerFactoryBean oracleEntityManagerFactory(EntityManagerFactoryBuilder builder) {
         return builder
-                .dataSource(cardDataSource())
+                .dataSource(oracleDataSource())
                 .packages(Product.class)
                 .build();
     }
 
-    @Bean
+    @Primary
+    @Bean("oracleTransactionManager")
     public PlatformTransactionManager oracleTransactionManager(
-            final @Qualifier("oracleEntityManagerFactory") LocalContainerEntityManagerFactoryBean cardEntityManagerFactory) {
-        return new JpaTransactionManager(cardEntityManagerFactory.getObject());
+            final @Qualifier("oracleEntityManagerFactory") LocalContainerEntityManagerFactoryBean oracleEntityManagerFactory) {
+        return new JpaTransactionManager(oracleEntityManagerFactory.getObject());
     }
 }
